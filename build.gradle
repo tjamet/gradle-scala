@@ -13,3 +13,23 @@ task run(type: JavaExec, dependsOn: classes) {
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
+
+configurations.each {
+    if (it.canBeResolved){
+        it.resolutionStrategy.activateDependencyLocking()
+    }
+}
+
+task resolveAndLockAll {
+    doFirst {
+        assert gradle.startParameter.writeDependencyLocks
+    }
+    doLast {
+        configurations.each {
+            if (it.canBeResolved) {
+                // Any any custome filtering on the to be resolved configurations
+                it.resolve()
+            }
+        }
+    }
+}
